@@ -1,16 +1,13 @@
+import requests, json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 
 chrome_options = Options()
-# chrome_options.add_argument("--disable-extensions")
-# chrome_options.add_argument("--disable-gpu")
-# chrome_options.add_argument("--no-sandbox") # linux only
-chrome_options.add_argument("--headless=new") # for Chrome >= 109
-# chrome_options.add_argument("--headless")
-# chrome_options.headless = True # also works
+chrome_options.add_argument('--headless=new')
 driver = webdriver.Chrome(options=chrome_options)
+
 start_url = "https://neetcode.io/practice"
 driver.get(start_url)
 
@@ -23,11 +20,23 @@ if toogle_button.get_attribute("data-tooltip") == "Show List View":
 
 neetcode_150_table = driver.find_element(By.XPATH, "/html/body/app-root/app-pattern-table-list/div/div[2]/div[4]/app-table/div/table/tbody")
 
-count = 0
-for row in neetcode_150_table.find_elements(By.XPATH, './tr'):
-    
-    count += 1
-print(count)
+responseObj = requests.get("https://leetcode.com/api/problems/algorithms/")
+list_problems = json.loads(responseObj.content)['stat_status_pairs']
 
-# b'<!DOCTYPE html><html xmlns="http://www....
+
+paid_problems_set = []
+
+for problem in list_problems:
+    if problem['paid_only']:
+        paid_problems_set.append(problem['stat']['question__title'].lower())
+
+paid_problems_set = set(paid_problems_set)
+
+
+f = open("free_neetcode_150_list.txt", "w")
+for row in neetcode_150_table.find_elements(By.XPATH, './tr'):
+    if row.find_element(By.XPATH, "./td[3]/a").text.lower() not in paid_problems_set:
+        f.write(row.find_element(By.XPATH, "./td[3]/a").get_attribute("href") + "\n")
+        # print(row.find_element(By.XPATH, "./td[3]/a").get_attribute("href"))
+f.close()
 driver.quit()

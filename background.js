@@ -1,7 +1,12 @@
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.createNewTab) {
-      // Create a new tab with the desired URL.
-      chrome.tabs.create({ url: "https://google.com" }); // Replace with your desired URL.
-    }
-  });
-  
+chrome.action.onClicked.addListener(function(tab) {
+    fetch(chrome.runtime.getURL("free_neetcode_150_list.txt"))
+        .then((response) => response.text())
+        .then(text => {
+            lines = text.toString().split('\n')
+            chrome.tabs.create({'url': lines[Math.floor(Math.random() * lines.length)]})
+        })
+    
+	// chrome.tabs.create({'url': 'https://www.google.com'}, function(tab) {
+	// 	// Tab opened.
+	// });
+})

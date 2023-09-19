@@ -3,14 +3,19 @@
   "name": "Redirect Extension",
   "version": "1.0",
   "description": "Adds a floating button to web pages.",
-  "permissions": ["tabs", "activeTab"],
+  "permissions": ["activeTab", "tabs"],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": "leetcode.png"
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["free_neetcode_150_list.txt"],
+      "matches": ["chrome-extension://maohidmdncmfjigajnhjnkjmnpgghlmp/*"]
+    }
+  ]
 }
 
 
